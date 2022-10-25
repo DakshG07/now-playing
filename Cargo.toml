@@ -1,0 +1,21 @@
+[package]
+name = "yasb-audio"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[dependencies]
+
+[dependencies.windows]
+version = "0.43.0"
+features = [
+    "Media",
+    "Media_Control",
+    "Foundation",
+]
+
+[dependencies.tokio]
+version = "1"
+features = ["full"]
