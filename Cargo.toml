@@ -1,5 +1,5 @@
 [package]
-name = "yasb-audio"
+name = "now-playing"
 version = "0.1.0"
 edition = "2021"
 
