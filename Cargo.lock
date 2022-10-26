@@ -36,6 +36,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "human-repr"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d0fb489e3108b684bba475a4cb9804260365870e2f60058265e3d0a3b309bdb1"
+
+[[package]]
 name = "libc"
 version = "0.2.136"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -76,6 +82,15 @@ dependencies = [
  "log",
  "wasi",
  "windows-sys",
+]
+
+[[package]]
+name = "now-playing"
+version = "0.1.0"
+dependencies = [
+ "human-repr",
+ "tokio",
+ "windows",
 ]
 
 [[package]]
@@ -322,11 +337,3 @@ name = "windows_x86_64_msvc"
 version = "0.42.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f40009d85759725a34da6d89a94e63d7bdc50a862acf0dbc7c8e488f1edcb6f5"
-
-[[package]]
-name = "yasb-audio"
-version = "0.1.0"
-dependencies = [
- "tokio",
- "windows",
-]

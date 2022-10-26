@@ -1,9 +1,11 @@
+use human_repr::HumanDuration;
+use human_repr::HumanDurationData;
 use std::fmt;
 use windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager;
 
 struct MediaInfo {
     pub title: String,
-    pub time: i64,
+    pub time: HumanDurationData,
 }
 
 impl fmt::Display for MediaInfo {
@@ -18,7 +20,7 @@ async fn main() -> Result<(), ()> {
         Ok(song) => song,
         Err(_) => MediaInfo {
             title: "No Song Playing".to_owned(),
-            time: 0,
+            time: 0.human_duration(),
         }, // No media playing
     };
     println!("{}", playing);
@@ -60,10 +62,10 @@ async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
         Ok(stuff) => stuff,
         Err(err) => return Err(err),
     };
-    println!("{:?}", time);
+    let base: i64 = 10;
     // Return song title
     Ok(MediaInfo {
         title: title.to_string(),
-        time: time.Duration,
+        time: ((time.Duration / base.pow(7)).human_duration()),
     })
 }
