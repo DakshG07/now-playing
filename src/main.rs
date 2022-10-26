@@ -26,22 +26,53 @@ enum Commands {
 async fn main() -> Result<(), ()> {
     let cli = Cli::parse();
 
-    let playing = match get_media_info().await {
-        Ok(song) => song,
-        Err(_) => MediaInfo {
-            title: "No Song Playing".to_owned(),
-            artist: "".to_owned(),
-            position: 0.human_duration(),
-        }, // No media playing
-    };
-
     match cli.command {
         Some(case) => match case {
-            Commands::Title => println!("{}", playing.title),
-            Commands::Artist => println!("{}", playing.artist),
-            Commands::Position => println!("{}", playing.position),
+            Commands::Title => {
+                let playing = match get_title().await {
+                    Ok(song) => song,
+                    Err(_) => MediaInfo {
+                        title: "No Song Playing".to_owned(),
+                        artist: "".to_owned(),
+                        position: 0.human_duration(),
+                    }, // No media playing
+                };
+                println!("{}", playing.title)
+            }
+            Commands::Artist => {
+                let playing = match get_artist().await {
+                    Ok(song) => song,
+                    Err(_) => MediaInfo {
+                        title: "No Song Playing".to_owned(),
+                        artist: "".to_owned(),
+                        position: 0.human_duration(),
+                    }, // No media playing
+                };
+                println!("{}", playing.artist)
+            }
+            Commands::Position => {
+                let playing = match get_position().await {
+                    Ok(song) => song,
+                    Err(_) => MediaInfo {
+                        title: "No Song Playing".to_owned(),
+                        artist: "".to_owned(),
+                        position: 0.human_duration(),
+                    }, // No media playing
+                };
+                println!("{}", playing.position)
+            }
         },
-        None => println!("{}", playing), // Default
+        None => {
+            let playing = match get_media_info().await {
+                Ok(song) => song,
+                Err(_) => MediaInfo {
+                    title: "No Song Playing".to_owned(),
+                    artist: "".to_owned(),
+                    position: 0.human_duration(),
+                }, // No media playing
+            };
+            println!("{}", playing)
+        } // Default
     }
     Ok(())
 }
@@ -91,5 +122,105 @@ async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
         title: title.to_string(),
         artist: artist.to_string(),
         position: ((position.Duration / base.pow(7)).human_duration()),
+    })
+}
+
+async fn get_artist() -> Result<MediaInfo, windows::core::Error> {
+    let mp = match GlobalSystemMediaTransportControlsSessionManager::RequestAsync() {
+        // Gets the async TransportControlsSessionManager so that we can work with it
+        Ok(stuff) => match stuff.await {
+            Ok(more_stuff) => more_stuff,
+            Err(err) => return Err(err),
+        },
+        Err(err) => return Err(err),
+    };
+    let current_session = match mp.GetCurrentSession() {
+        // Gets current media player
+        Ok(stuff) => stuff,
+        Err(err) => return Err(err),
+    };
+    let info = match current_session.TryGetMediaPropertiesAsync() {
+        // Get media properties
+        Ok(stuff) => match stuff.await {
+            Ok(stuf) => stuf,
+            Err(err) => return Err(err),
+        },
+        Err(err) => return Err(err),
+    };
+    let artist = match info.Artist() {
+        Ok(stuff) => stuff,
+        Err(err) => return Err(err),
+    };
+    // Return song title
+    Ok(MediaInfo {
+        title: "uwu".to_owned(),
+        artist: artist.to_string(),
+        position: 69.human_duration(),
+    })
+}
+
+async fn get_position() -> Result<MediaInfo, windows::core::Error> {
+    let mp = match GlobalSystemMediaTransportControlsSessionManager::RequestAsync() {
+        // Gets the async TransportControlsSessionManager so that we can work with it
+        Ok(stuff) => match stuff.await {
+            Ok(more_stuff) => more_stuff,
+            Err(err) => return Err(err),
+        },
+        Err(err) => return Err(err),
+    };
+    let current_session = match mp.GetCurrentSession() {
+        // Gets current media player
+        Ok(stuff) => stuff,
+        Err(err) => return Err(err),
+    };
+    let timeline = match current_session.GetTimelineProperties() {
+        // Gets current media player
+        Ok(stuff) => stuff,
+        Err(err) => return Err(err),
+    };
+    let position = match timeline.Position() {
+        Ok(stuff) => stuff,
+        Err(err) => return Err(err),
+    };
+    let base: i64 = 10;
+    // Return song title
+    Ok(MediaInfo {
+        title: "uwu".to_owned(),
+        artist: "uwu".to_owned(),
+        position: ((position.Duration / base.pow(7)).human_duration()),
+    })
+}
+
+async fn get_title() -> Result<MediaInfo, windows::core::Error> {
+    let mp = match GlobalSystemMediaTransportControlsSessionManager::RequestAsync() {
+        // Gets the async TransportControlsSessionManager so that we can work with it
+        Ok(stuff) => match stuff.await {
+            Ok(more_stuff) => more_stuff,
+            Err(err) => return Err(err),
+        },
+        Err(err) => return Err(err),
+    };
+    let current_session = match mp.GetCurrentSession() {
+        // Gets current media player
+        Ok(stuff) => stuff,
+        Err(err) => return Err(err),
+    };
+    let info = match current_session.TryGetMediaPropertiesAsync() {
+        // Get media properties
+        Ok(stuff) => match stuff.await {
+            Ok(stuf) => stuf,
+            Err(err) => return Err(err),
+        },
+        Err(err) => return Err(err),
+    };
+    let title = match info.Title() {
+        Ok(stuff) => stuff,
+        Err(err) => return Err(err),
+    };
+    // Return song title
+    Ok(MediaInfo {
+        title: title.to_string(),
+        artist: "uwu".to_owned(),
+        position: 69.human_duration(),
     })
 }
