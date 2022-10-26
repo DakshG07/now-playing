@@ -24,19 +24,19 @@ now-playing toggle
 Pauses/plays the music. Not yet implemented.
 
 ```
-now-playing time
+now-playing position
 ```
-Gets current timestamp. Not yet implemented.
+Gets current timestamp.
 
 ```
 now-playing title
 ```
-Gets current song. Not yet implemented.
+Gets current song.
 
 ```
 now-playing artist
 ```
-Gets current artist. Not yet implemented.
+Gets current artist.
 
 ```
 now-playing status

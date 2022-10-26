@@ -1,39 +1,48 @@
+pub mod media_info;
+
+pub use crate::media_info::MediaInfo;
+use clap::{Parser, Subcommand};
 use human_repr::HumanDuration;
-use human_repr::HumanDurationData;
-use std::fmt;
 use windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager;
 
-struct MediaInfo {
-    pub title: String,
-    pub artist: String,
-    pub time: HumanDurationData,
+#[derive(Parser)]
+#[command(name = "now-playing")]
+#[command(author = "Dukk <acedaksh07@gmail.com>")]
+#[command(version = "1.0.0")]
+#[command(about = "Gets information about currently playing media on Windows.")]
+struct Cli {
+    #[command(subcommand)]
+    command: Option<Commands>,
 }
 
-impl fmt::Display for MediaInfo {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.time != "0ns" && self.artist != "" {
-            write!(f, "{} - {} ({})", self.title, self.artist, self.time)
-        } else if self.artist != "" && self.time == "0ns" {
-            write!(f, "{} - {}", self.title, self.artist)
-        } else if self.time != "0ns" && self.artist == "" {
-            write!(f, "{} ({})", self.title, self.time)
-        } else {
-            write!(f, "{}", self.title)
-        }
-    }
+#[derive(Subcommand)]
+enum Commands {
+    Title,
+    Artist,
+    Position,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), ()> {
+    let cli = Cli::parse();
+
     let playing = match get_media_info().await {
         Ok(song) => song,
         Err(_) => MediaInfo {
             title: "No Song Playing".to_owned(),
             artist: "".to_owned(),
-            time: 0.human_duration(),
+            position: 0.human_duration(),
         }, // No media playing
     };
-    println!("{}", playing);
+
+    match cli.command {
+        Some(case) => match case {
+            Commands::Title => println!("{}", playing.title),
+            Commands::Artist => println!("{}", playing.artist),
+            Commands::Position => println!("{}", playing.position),
+        },
+        None => println!("{}", playing), // Default
+    }
     Ok(())
 }
 
@@ -72,7 +81,7 @@ async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
         Ok(stuff) => stuff,
         Err(err) => return Err(err),
     };
-    let time = match timeline.Position() {
+    let position = match timeline.Position() {
         Ok(stuff) => stuff,
         Err(err) => return Err(err),
     };
@@ -81,6 +90,6 @@ async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
     Ok(MediaInfo {
         title: title.to_string(),
         artist: artist.to_string(),
-        time: ((time.Duration / base.pow(7)).human_duration()),
+        position: ((position.Duration / base.pow(7)).human_duration()),
     })
 }

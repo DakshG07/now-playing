@@ -8,6 +8,7 @@ edition = "2021"
 
 [dependencies]
 human-repr = "1.0.1"
+clap = { version = "4.0.18", features = ["derive"] }
 
 [dependencies.windows]
 version = "0.43.0"
