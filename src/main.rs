@@ -24,6 +24,18 @@ enum Commands {
     Position,
 }
 
+pub trait ResultOkOr<T> {
+    fn ok_or(self, or: T) -> T;
+}
+
+impl<T, E> ResultOkOr<T> for Result<T, E> {
+    fn ok_or(self, or: T) -> T {
+        match self {
+            Ok(stuff) => stuff,
+            _ => or,
+        }
+    }
+}
 #[tokio::main]
 async fn main() -> Result<(), ()> {
     let cli = Cli::parse();
@@ -31,25 +43,16 @@ async fn main() -> Result<(), ()> {
     match cli.command {
         Some(case) => match case {
             Commands::Title => {
-                if let Ok(title) = get_title().await {
-                    println!("{}", title)
-                } else {
-                    println!("No Music Playing")
-                }
+                let playing = get_title().await.ok_or("No Song Playing".to_owned());
+                println!("{}", playing)
             }
             Commands::Artist => {
-                if let Ok(artist) = get_artist().await {
-                    println!("{}", artist)
-                } else {
-                    println!("No Artist")
-                }
+                let playing = get_artist().await.ok_or("No Artist".to_owned());
+                println!("{}", playing)
             }
             Commands::Position => {
-                if let Ok(position) = get_position().await {
-                    println!("{}", position)
-                } else {
-                    println!("0ns")
-                }
+                let playing = get_position().await.ok_or(0.human_duration());
+                println!("{}", playing)
             }
         },
         None => {

@@ -1,5 +1,5 @@
-use std::fmt;
 use human_repr::HumanDurationData;
+use std::fmt;
 
 pub struct MediaInfo {
     pub title: String,
