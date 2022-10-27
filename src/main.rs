@@ -57,7 +57,7 @@ async fn main() -> Result<(), ()> {
                 Ok(song) => song,
                 Err(_) => MediaInfo {
                     title: "No Music Playing".to_owned(),
-                    artist: "".to_owned(),
+                    artist: "No Artist".to_owned(),
                     position: 0_i64.human_duration(),
                 },
             };
@@ -98,8 +98,7 @@ async fn get_position() -> Result<HumanDurationData, windows::core::Error> {
     let current_session = get_session().await?;
     let timeline = current_session.GetTimelineProperties()?;
     let position = timeline.Position()?;
-    let base: i64 = 10;
-    Ok((position.Duration / base.pow(7)).human_duration())
+    Ok((position.Duration / 10_i64.pow(7)).human_duration())
 }
 
 async fn get_title() -> Result<String, windows::core::Error> {
