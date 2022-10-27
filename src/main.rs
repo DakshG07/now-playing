@@ -3,6 +3,7 @@ pub mod media_info;
 pub use crate::media_info::MediaInfo;
 use clap::{Parser, Subcommand};
 use human_repr::HumanDuration;
+use human_repr::HumanDurationData;
 use windows::Media::Control::GlobalSystemMediaTransportControlsSession;
 use windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager;
 
@@ -23,6 +24,18 @@ enum Commands {
     Position,
 }
 
+pub trait ResultOkOr<T> {
+    fn ok_or(self, or: T) -> T;
+}
+
+impl<T, E> ResultOkOr<T> for Result<T, E> {
+    fn ok_or(self, or: T) -> T {
+        match self {
+            Ok(stuff) => stuff,
+            _ => or,
+        }
+    }
+}
 #[tokio::main]
 async fn main() -> Result<(), ()> {
     let cli = Cli::parse();
@@ -30,34 +43,29 @@ async fn main() -> Result<(), ()> {
     match cli.command {
         Some(case) => match case {
             Commands::Title => {
-                let playing = match get_title().await {
-                    Ok(song) => song,
-                    Err(_) => MediaInfo::empty(),
-                };
-                println!("{}", playing.title)
+                let playing = get_title().await.ok_or("No Song Playing".to_owned());
+                println!("{}", playing)
             }
             Commands::Artist => {
-                let playing = match get_artist().await {
-                    Ok(song) => song,
-                    Err(_) => MediaInfo::empty(),
-                };
-                println!("{}", playing.artist)
+                let playing = get_artist().await.ok_or("No Artist".to_owned());
+                println!("{}", playing)
             }
             Commands::Position => {
-                let playing = match get_position().await {
-                    Ok(song) => song,
-                    Err(_) => MediaInfo::empty(),
-                };
-                println!("{}", playing.position)
+                let playing = get_position().await.ok_or(0.human_duration());
+                println!("{}", playing)
             }
         },
         None => {
             let playing = match get_media_info().await {
                 Ok(song) => song,
-                Err(_) => MediaInfo::empty(),
+                Err(_) => MediaInfo {
+                    title: "No Music Playing".to_owned(),
+                    artist: "No Artist".to_owned(),
+                    position: 0_i64.human_duration(),
+                },
             };
             println!("{}", playing)
-        } // Default
+        }
     }
     Ok(())
 }
@@ -75,7 +83,6 @@ async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
     let artist = info.Artist()?;
     let timeline = current_session.GetTimelineProperties()?;
     let position = timeline.Position()?;
-    // Return song title
     Ok(MediaInfo {
         title: title.to_string(),
         artist: artist.to_string(),
@@ -83,39 +90,23 @@ async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
     })
 }
 
-async fn get_artist() -> Result<MediaInfo, windows::core::Error> {
+async fn get_artist() -> Result<String, windows::core::Error> {
     let current_session = get_session().await?;
     let info = current_session.TryGetMediaPropertiesAsync()?.await?;
     let artist = info.Artist()?;
-    // Return song title
-    Ok(MediaInfo {
-        title: "".to_owned(),
-        artist: artist.to_string(),
-        position: 0.human_duration(),
-    })
+    Ok(artist.to_string())
 }
 
-async fn get_position() -> Result<MediaInfo, windows::core::Error> {
+async fn get_position() -> Result<HumanDurationData, windows::core::Error> {
     let current_session = get_session().await?;
     let timeline = current_session.GetTimelineProperties()?;
     let position = timeline.Position()?;
-    let base: i64 = 10;
-    // Return song title
-    Ok(MediaInfo {
-        title: "".to_owned(),
-        artist: "".to_owned(),
-        position: ((position.Duration / base.pow(7)).human_duration()),
-    })
+    Ok((position.Duration / 10_i64.pow(7)).human_duration())
 }
 
-async fn get_title() -> Result<MediaInfo, windows::core::Error> {
+async fn get_title() -> Result<String, windows::core::Error> {
     let current_session = get_session().await?;
     let info = current_session.TryGetMediaPropertiesAsync()?.await?;
     let title = info.Title()?;
-    // Return song title
-    Ok(MediaInfo {
-        title: title.to_string(),
-        artist: "".to_owned(),
-        position: 0.human_duration(),
-    })
+    Ok(title.to_string())
 }
