@@ -34,21 +34,21 @@ async fn main() -> Result<(), ()> {
                 if let Ok(title) = get_title().await {
                     println!("{}", title)
                 } else {
-                    println!("{}", 0.human_duration())
+                    println!("No Music Playing")
                 }
             }
             Commands::Artist => {
                 if let Ok(artist) = get_artist().await {
                     println!("{}", artist)
                 } else {
-                    println!("{}", 0.human_duration())
+                    println!("No Artist")
                 }
             }
             Commands::Position => {
                 if let Ok(position) = get_position().await {
                     println!("{}", position)
                 } else {
-                    println!("{}", 0.human_duration())
+                    println!("0ns")
                 }
             }
         },
