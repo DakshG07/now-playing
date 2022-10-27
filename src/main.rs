@@ -44,14 +44,13 @@ async fn main() -> Result<(), ()> {
             }
         },
         None => {
-            let playing = match get_media_info().await {
-                Ok(song) => song,
-                Err(_) => MediaInfo {
+            let playing = get_media_info().await.unwrap_or_else(|_|
+                MediaInfo {
                     title: "No Music Playing".to_owned(),
                     artist: "No Artist".to_owned(),
                     position: 0_i64.human_duration(),
-                },
-            };
+                }
+            );
             println!("{}", playing)
         }
     }
