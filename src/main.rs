@@ -30,23 +30,36 @@ enum Commands {
     Position,
     /// Print the length of the song
     Duration,
+    /// Play the music if it was previously paused
+    Play,
+    /// Pause the music if it was previously playing
+    Pause,
+    /// Toggle the state of the music: playing or paused
+    Toggle,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), ()> {
     let cli = Cli::parse();
 
-    let playing = get_media_info().await.unwrap_or(MediaInfo::empty());
+    let playing = get_media_info().await.unwrap_or_else(|_| MediaInfo::empty());
 
-    if let Some(case) = cli.command {
-        match case {
+    if let Some(ref command) = cli.command {
+        match command {
             Commands::Title => println!("{}", playing.title),
             Commands::Artist => println!("{}", playing.artist),
             Commands::Position => println!("{}", playing.position),
             Commands::Duration => println!("{}", playing.duration),
+            _ => println!(
+                "{}",
+                match handle_commands(&cli.command.unwrap()).await {
+                    Ok(stuff) => stuff.to_string(),
+                    Err(_) => "Failed.".to_owned(),
+                }
+            ),
         }
     } else {
-        println!("{:#?}", playing);
+        println!("{}", playing);
     }
     Ok(())
 }
@@ -57,46 +70,24 @@ async fn get_session() -> Result<GlobalSystemMediaTransportControlsSession, wind
     Ok(current_session)
 }
 
-async fn toggle_play(cmd: &Commands) {
+async fn handle_commands(cmd: &Commands) -> Result<bool, windows::core::Error> {
     let current_session = get_session().await.unwrap();
+    
     match cmd {
-        Commands::Pause => {
-            match current_session.TryPauseAsync() {
-                Ok(res) => println!(
-                    "{}",
-                    match res.await {
-                        Ok(_) => "".to_owned(),
-                        Err(_) => "Failed.".to_owned(),
-                    }
-                ),
-                Err(_) => println!("Failed."),
-            };
-        }
-        Commands::Play => {
-            match current_session.TryPlayAsync() {
-                Ok(res) => println!(
-                    "{}",
-                    match res.await {
-                        Ok(_) => "".to_owned(),
-                        Err(_) => "Failed.".to_owned(),
-                    }
-                ),
-                Err(_) => println!("Failed."),
-            };
-        }
-        _ => {
-            match current_session.TryTogglePlayPauseAsync() {
-                Ok(res) => println!(
-                    "{}",
-                    match res.await {
-                        Ok(_) => "".to_owned(),
-                        Err(_) => "Failed.".to_owned(),
-                    }
-                ),
-                Err(_) => println!("Failed."),
-            };
-        }
-    };
+        Commands::Pause => match current_session.TryPauseAsync() {
+            Ok(res) => res.await,
+            Err(err) => Err(err),
+        },
+        Commands::Play => match current_session.TryPlayAsync() {
+            Ok(res) => res.await,
+            Err(err) => Err(err),
+        },
+        Commands::Toggle => match current_session.TryTogglePlayPauseAsync() {
+            Ok(res) => res.await,
+            Err(err) => Err(err),
+        },
+        _ => todo!(),
+    }
 }
 
 async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
