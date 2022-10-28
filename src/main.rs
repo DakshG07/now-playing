@@ -57,6 +57,48 @@ async fn get_session() -> Result<GlobalSystemMediaTransportControlsSession, wind
     Ok(current_session)
 }
 
+async fn toggle_play(cmd: &Commands) {
+    let current_session = get_session().await.unwrap();
+    match cmd {
+        Commands::Pause => {
+            match current_session.TryPauseAsync() {
+                Ok(res) => println!(
+                    "{}",
+                    match res.await {
+                        Ok(_) => "".to_owned(),
+                        Err(_) => "Failed.".to_owned(),
+                    }
+                ),
+                Err(_) => println!("Failed."),
+            };
+        }
+        Commands::Play => {
+            match current_session.TryPlayAsync() {
+                Ok(res) => println!(
+                    "{}",
+                    match res.await {
+                        Ok(_) => "".to_owned(),
+                        Err(_) => "Failed.".to_owned(),
+                    }
+                ),
+                Err(_) => println!("Failed."),
+            };
+        }
+        _ => {
+            match current_session.TryTogglePlayPauseAsync() {
+                Ok(res) => println!(
+                    "{}",
+                    match res.await {
+                        Ok(_) => "".to_owned(),
+                        Err(_) => "Failed.".to_owned(),
+                    }
+                ),
+                Err(_) => println!("Failed."),
+            };
+        }
+    };
+}
+
 async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
     let current_session = get_session().await?;
 
