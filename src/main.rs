@@ -32,25 +32,16 @@ async fn main() -> Result<(), ()> {
 
     match cli.command {
         Some(ref case) => match case {
-            Commands::Title => println!(
+            Commands::Title => println!("{}", get_media().await),
+            Commands::Artist => println!("{}", get_media().await),
+            Commands::Position => println!("{}", get_media().await),
+            _ => println!(
                 "{}",
-                get_media_info()
-                    .await
-                    .unwrap_or_else(|_| MediaInfo::empty())
+                match handle_commands(&cli.command.unwrap()).await {
+                    Ok(stuff) => stuff.to_string().to_owned(),
+                    Err(_) => "Failed.".to_owned(),
+                }
             ),
-            Commands::Artist => println!(
-                "{}",
-                get_media_info()
-                    .await
-                    .unwrap_or_else(|_| MediaInfo::empty())
-            ),
-            Commands::Position => println!(
-                "{}",
-                get_media_info()
-                    .await
-                    .unwrap_or_else(|_| MediaInfo::empty())
-            ),
-            _ => toggle_play(&cli.command.unwrap()).await,
         },
         None => println!(
             "{}",
@@ -68,46 +59,29 @@ async fn get_session() -> Result<GlobalSystemMediaTransportControlsSession, wind
     Ok(current_session)
 }
 
-async fn toggle_play(cmd: &Commands) {
+async fn handle_commands(cmd: &Commands) -> Result<bool, windows::core::Error> {
     let current_session = get_session().await.unwrap();
     match cmd {
-        Commands::Pause => {
-            match current_session.TryPauseAsync() {
-                Ok(res) => println!(
-                    "{}",
-                    match res.await {
-                        Ok(_) => "".to_owned(),
-                        Err(_) => "Failed.".to_owned(),
-                    }
-                ),
-                Err(_) => println!("Failed."),
-            };
-        }
-        Commands::Play => {
-            match current_session.TryPlayAsync() {
-                Ok(res) => println!(
-                    "{}",
-                    match res.await {
-                        Ok(_) => "".to_owned(),
-                        Err(_) => "Failed.".to_owned(),
-                    }
-                ),
-                Err(_) => println!("Failed."),
-            };
-        }
-        _ => {
-            match current_session.TryTogglePlayPauseAsync() {
-                Ok(res) => println!(
-                    "{}",
-                    match res.await {
-                        Ok(_) => "".to_owned(),
-                        Err(_) => "Failed.".to_owned(),
-                    }
-                ),
-                Err(_) => println!("Failed."),
-            };
-        }
-    };
+        Commands::Pause => match current_session.TryPauseAsync() {
+            Ok(res) => res.await,
+            Err(err) => Err(err),
+        },
+        Commands::Play => match current_session.TryPlayAsync() {
+            Ok(res) => res.await,
+            Err(err) => Err(err),
+        },
+        _ => match current_session.TryTogglePlayPauseAsync() {
+            Ok(res) => res.await,
+            Err(err) => Err(err),
+        },
+    }
+}
+
+async fn get_media() -> MediaInfo {
+    // Literally just a nice little wrapper
+    get_media_info()
+        .await
+        .unwrap_or_else(|_| MediaInfo::empty())
 }
 
 async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
