@@ -74,7 +74,7 @@ async fn toggle_play(cmd: &Commands) {
         Commands::Pause => {
             match current_session.TryPauseAsync() {
                 Ok(res) => println!(
-                    "{:?}",
+                    "{}",
                     match res.await {
                         Ok(_) => "".to_owned(),
                         Err(_) => "Failed.".to_owned(),
@@ -86,7 +86,7 @@ async fn toggle_play(cmd: &Commands) {
         Commands::Play => {
             match current_session.TryPlayAsync() {
                 Ok(res) => println!(
-                    "{:?}",
+                    "{}",
                     match res.await {
                         Ok(_) => "".to_owned(),
                         Err(_) => "Failed.".to_owned(),
@@ -98,7 +98,7 @@ async fn toggle_play(cmd: &Commands) {
         _ => {
             match current_session.TryTogglePlayPauseAsync() {
                 Ok(res) => println!(
-                    "{:?}",
+                    "{}",
                     match res.await {
                         Ok(_) => "".to_owned(),
                         Err(_) => "Failed.".to_owned(),
