@@ -1,17 +1,10 @@
-//mod media_info;
 mod media_status;
 mod media_session;
 mod cleanup_timespan;
 
 use crate::media_session::MediaSession;
-//use crate::media_info::MediaInfo;
 use crate::media_status::MediaStatus;
 use clap::{Parser, Subcommand};
-//use cleanup_timespan::Cleanup;
-
-/*use windows::Media::Control::{
-    GlobalSystemMediaTransportControlsSession, GlobalSystemMediaTransportControlsSessionManager,
-};*/
 
 #[derive(Parser)]
 #[command(name = "now-playing")]

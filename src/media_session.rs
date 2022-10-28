@@ -22,9 +22,9 @@ impl MediaSession {
         let properties = session.TryGetMediaPropertiesAsync()?.await?;
         let timeline = session.GetTimelineProperties()?;
         Ok(Self {
-            session: session,
-            properties: properties, //.session.TryGetMediaPropertiesAsync()?.await?,
-            timeline: timeline, //res.session.GetTimelineProperties()?,
+            session,
+            properties,
+            timeline,
         })
     }
     pub fn get_artist(&self) -> String {
@@ -50,30 +50,21 @@ impl MediaSession {
 
     pub fn play(&self) -> bool {
         if let Ok(res) = self.session.TryPlayAsync() {
-            match res.get() {
-                Ok(a) => a,
-                Err(_) => false,
-            }
+            res.get().unwrap_or(false)
         } else {
             false
         }
     }
     pub fn pause(&self) -> bool {
         if let Ok(res) = self.session.TryPauseAsync() {
-            match res.get() {
-                Ok(a) => a,
-                Err(_) => false,
-            }
+            res.get().unwrap_or(false)
         } else {
             false
         }
     }
     pub fn toggle(&self) -> bool {
         if let Ok(res) = self.session.TryTogglePlayPauseAsync() {
-            match res.get() {
-                Ok(a) => a,
-                Err(_) => false,
-            }
+            res.get().unwrap_or(false)
         } else {
             false
         }
