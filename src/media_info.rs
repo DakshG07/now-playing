@@ -1,4 +1,4 @@
-use human_repr::HumanDurationData;
+use human_repr::{HumanDuration, HumanDurationData};
 use std::fmt;
 
 pub struct MediaInfo {
@@ -20,6 +20,16 @@ impl fmt::Display for MediaInfo {
             write!(f, "{} ({})", self.title, self.position)
         } else {
             write!(f, "{}", self.title)
+        }
+    }
+}
+
+impl MediaInfo {
+    pub fn empty() -> Self {
+        MediaInfo {
+            title: "No Music Playing".to_owned(),
+            artist: "No Artist".to_owned(),
+            position: 0_i64.human_duration(),
         }
     }
 }
