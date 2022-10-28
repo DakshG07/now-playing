@@ -1,11 +1,13 @@
+pub mod cleanup_timespan;
 pub mod media_info;
 
 pub use crate::media_info::MediaInfo;
 use clap::{Parser, Subcommand};
-use human_repr::HumanDuration;
-use human_repr::HumanDurationData;
-use windows::Media::Control::GlobalSystemMediaTransportControlsSession;
-use windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager;
+use cleanup_timespan::Cleanup;
+
+use windows::Media::Control::{
+    GlobalSystemMediaTransportControlsSession, GlobalSystemMediaTransportControlsSessionManager,
+};
 
 #[derive(Parser)]
 #[command(name = "now-playing")]
@@ -19,30 +21,32 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Print the title of the song
     Title,
+    /// Print the atist of the song
     Artist,
+    /// Print the current position in the song
+    /// (may be delayed for a few seconds due to winRT restrictions)
     Position,
+    /// Print the length of the song
+    Duration,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), ()> {
     let cli = Cli::parse();
 
-    let playing = get_media_info().await.unwrap_or_else(|_|
-        MediaInfo {
-            title: "No Music Playing".to_owned(),
-            artist: "No Artist".to_owned(),
-            position: 0_i64.human_duration(),
-        }
-    );
+    let playing = get_media_info().await.unwrap_or(MediaInfo::empty());
 
-    match cli.command {
-        Some(case) => match case {
+    if let Some(case) = cli.command {
+        match case {
             Commands::Title => println!("{}", playing.title),
             Commands::Artist => println!("{}", playing.artist),
             Commands::Position => println!("{}", playing.position),
-        },
-        None => println!("{}", playing)
+            Commands::Duration => println!("{}", playing.duration),
+        }
+    } else {
+        println!("{:#?}", playing);
     }
     Ok(())
 }
@@ -57,16 +61,12 @@ async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
     let current_session = get_session().await?;
 
     let properties = current_session.TryGetMediaPropertiesAsync()?.await?;
-    let title = properties.Title()?;
-    let artist = properties.Artist()?;
-
     let timeline = current_session.GetTimelineProperties()?;
-    let position = timeline.Position()?;
 
     Ok(MediaInfo {
-        title: title.to_string(),
-        artist: artist.to_string(),
-        position: ((position.Duration / 10_i64.pow(7)).human_duration()),
+        title: properties.Title()?.to_string(),
+        artist: properties.Artist()?.to_string(),
+        position: timeline.Position()?.cleanup(),
+        duration: timeline.EndTime()?.cleanup(),
     })
 }
-
