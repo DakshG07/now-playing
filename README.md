@@ -11,17 +11,17 @@ Simply run the command to get the current playing song, time, and artist. Only i
 ```
 now-playing play
 ```
-Plays the current music. Not yet implemented.
+Plays the current music.
 
 ```
 now-playing pause
 ```
-Pauses the music. Not yet implemented.
+Pauses the music.
 
 ```
 now-playing toggle
 ```
-Pauses/plays the music. Not yet implemented.
+Pauses/plays the music.
 
 ```
 now-playing position
