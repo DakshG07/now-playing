@@ -1,7 +1,9 @@
 # now-playing
-A simple utility that utilizes WinRT to get the Song Title and artist. Also gets current playback features.
+
+A Windows utility written in Rust to be blazingly fast, simple, and easy to use. Gets the current audio playing using WinRT and displays the Song Title and Time. Also exposes functions to play and pause music.
 
 ## Usage
+
 ```
 Gets information about currently playing media on Windows.
 
@@ -24,7 +26,8 @@ Options:
 
 ## Todo
 
-### /playing and paused states
+### playing and paused states
+
 ```
 now-playing --play [text to return if playing]
 now-playing --pause [text to return if paused]
