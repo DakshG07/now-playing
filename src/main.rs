@@ -42,14 +42,12 @@ enum Commands {
 async fn main() -> Result<(), ()> {
     let cli = Cli::parse();
 
-    let playing = get_media_info().await.unwrap_or_else(|_| MediaInfo::empty());
-
     if let Some(ref command) = cli.command {
         match command {
-            Commands::Title => println!("{}", playing.title),
-            Commands::Artist => println!("{}", playing.artist),
-            Commands::Position => println!("{}", playing.position),
-            Commands::Duration => println!("{}", playing.duration),
+            Commands::Title => println!("{}", get_media().await.title),
+            Commands::Artist => println!("{}", get_media().await.artist),
+            Commands::Position => println!("{}", get_media().await.position),
+            Commands::Duration => println!("{}", get_media().await.duration),
             _ => println!(
                 "{}",
                 match handle_commands(&cli.command.unwrap()).await {
@@ -59,7 +57,7 @@ async fn main() -> Result<(), ()> {
             ),
         }
     } else {
-        println!("{}", playing);
+        println!("{}", get_media().await);
     }
     Ok(())
 }
@@ -88,6 +86,13 @@ async fn handle_commands(cmd: &Commands) -> Result<bool, windows::core::Error> {
         },
         _ => todo!(),
     }
+}
+
+/// Just a nice little wrapper
+async fn get_media() -> MediaInfo {
+    get_media_info()
+        .await
+        .unwrap_or_else(|_| MediaInfo::empty())
 }
 
 async fn get_media_info() -> Result<MediaInfo, windows::core::Error> {
