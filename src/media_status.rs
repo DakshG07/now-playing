@@ -1,5 +1,5 @@
-use windows::Media::Control::GlobalSystemMediaTransportControlsSessionPlaybackStatus as WinPlaybackStatus;
 use std::fmt;
+use windows::Media::Control::GlobalSystemMediaTransportControlsSessionPlaybackStatus as WinPlaybackStatus;
 
 #[derive(Debug)]
 pub enum MediaStatus {
@@ -13,12 +13,12 @@ pub enum MediaStatus {
 
 impl fmt::Display for MediaStatus {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-       write!(f, "{:?}", self)
+        write!(f, "{:?}", self)
     }
 }
 
-impl MediaStatus {
-    pub fn from_win(a: WinPlaybackStatus) -> Self {
+impl From<WinPlaybackStatus> for MediaStatus {
+    fn from(a: WinPlaybackStatus) -> Self {
         match a {
             WinPlaybackStatus::Closed => MediaStatus::Closed,
             WinPlaybackStatus::Opened => MediaStatus::Opened,
@@ -28,6 +28,6 @@ impl MediaStatus {
             WinPlaybackStatus::Paused => MediaStatus::Paused,
             // there do not exist any more cases
             _ => panic!(),
-        } 
+        }
     }
 }

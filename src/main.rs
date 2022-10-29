@@ -1,6 +1,6 @@
-mod media_status;
-mod media_session;
 mod cleanup_timespan;
+mod media_session;
+mod media_status;
 
 use crate::media_session::MediaSession;
 use crate::media_status::MediaStatus;
@@ -52,11 +52,11 @@ async fn main() -> Result<(), ()> {
                 Commands::Status => println!("{:#?}", media_session.get_status()),
                 // commands that modify the state
                 Commands::Play => println!("{}", media_session.play()),
-                Commands::Pause=> println!("{}", media_session.pause()),
+                Commands::Pause => println!("{}", media_session.pause()),
                 Commands::Toggle => println!("{}", media_session.toggle()),
             }
         } else {
-            println!("{}", media_session); 
+            println!("{}", media_session);
         }
     }
 

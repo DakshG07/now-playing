@@ -1,10 +1,9 @@
-use std::fmt;
 use crate::cleanup_timespan::Cleanup;
 use crate::MediaStatus;
 use human_repr::HumanDurationData;
+use std::fmt;
 use windows::Media::Control::{
-    GlobalSystemMediaTransportControlsSession,
-    GlobalSystemMediaTransportControlsSessionManager,
+    GlobalSystemMediaTransportControlsSession, GlobalSystemMediaTransportControlsSessionManager,
     GlobalSystemMediaTransportControlsSessionMediaProperties,
     GlobalSystemMediaTransportControlsSessionTimelineProperties,
 };
@@ -27,22 +26,27 @@ impl MediaSession {
             timeline,
         })
     }
+
     pub fn get_artist(&self) -> String {
         self.properties.Title().unwrap_or_default().to_string()
     }
+
     pub fn get_title(&self) -> String {
         self.properties.Artist().unwrap_or_default().to_string()
     }
+
     pub fn get_position(&self) -> HumanDurationData {
         self.timeline.Position().unwrap_or_default().cleanup()
     }
+
     pub fn get_duration(&self) -> HumanDurationData {
         self.timeline.EndTime().unwrap_or_default().cleanup()
     }
+
     pub fn get_status(&self) -> MediaStatus {
         if let Ok(p) = self.session.GetPlaybackInfo() {
             if let Ok(s) = p.PlaybackStatus() {
-                return MediaStatus::from_win(s);
+                return MediaStatus::from(s);
             }
         }
         MediaStatus::Closed
@@ -55,6 +59,7 @@ impl MediaSession {
             false
         }
     }
+
     pub fn pause(&self) -> bool {
         if let Ok(res) = self.session.TryPauseAsync() {
             res.get().unwrap_or(false)
@@ -62,6 +67,7 @@ impl MediaSession {
             false
         }
     }
+
     pub fn toggle(&self) -> bool {
         if let Ok(res) = self.session.TryTogglePlayPauseAsync() {
             res.get().unwrap_or(false)
@@ -70,20 +76,31 @@ impl MediaSession {
         }
     }
 
-    // to implement:
-    // pub fn stop() -> Result<()> {}
-    // pub fn skip() -> Result<()> {}
-    // pub fn previous() -> Result<()> {}
+    // pub fn stop() -> bool {
+    //     todo!()
+    // }
 
-    // maybe: pub fn set_position(a: u64) -> Result<()> {}
-    // also shuffle
-    
-    // use TimelinePropertiesChanged function callback
-    // use PlaybackInfoChanged function callback
+    // pub fn skip() -> bool {
+    //     todo!()
+    // }
+
+    // pub fn previous() -> bool {
+    //     todo!()
+    // }
+
+    // pub fn set_position(new_pos: u64) -> bool {
+    //     todo!()
+    // }
 }
 
 impl fmt::Display for MediaSession {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(f, "{} - {} ({})", self.get_title(), self.get_artist(), self.get_position())
+        write!(
+            f,
+            "{} - {} ({})",
+            self.get_title(),
+            self.get_artist(),
+            self.get_position()
+        )
     }
 }
