@@ -18,22 +18,22 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-    /// Print the title of the song
+    /// Print the title of the media
     Title,
-    /// Print the atist of the song
+    /// Print the artist of the media
     Artist,
-    /// Print the current position in the song
-    /// (may be delayed for a few seconds due to winRT restrictions)
+    /// Print the current position in the media
+    /// (may be delayed for a few seconds due to WinRT restrictions)
     Position,
-    /// Print the length of the song
+    /// Print the length of the media
     Duration,
-    /// Print the status of the song
+    /// Print the status of the media
     Status,
-    /// Play the music if it was previously paused
+    /// Play the media if it was previously paused
     Play,
-    /// Pause the music if it was previously playing
+    /// Pause the media if it was previously playing
     Pause,
-    /// Toggle the state of the music: playing or paused
+    /// Toggle the state of the media between playing and paused
     Toggle,
 }
 
