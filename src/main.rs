@@ -6,7 +6,7 @@ use crate::media_session::MediaSession;
 use crate::media_status::MediaStatus;
 use clap::{Parser, Subcommand};
 
-#[derive(Parser)]
+#[derive(Debug, Parser)]
 #[command(name = "now-playing")]
 #[command(author = "Dukk <acedaksh07@gmail.com>")]
 #[command(version = "1.0.0")]
@@ -16,7 +16,7 @@ struct Cli {
     command: Option<Commands>,
 }
 
-#[derive(Subcommand)]
+#[derive(Debug, Subcommand)]
 enum Commands {
     /// Print the title of the song
     Title,
