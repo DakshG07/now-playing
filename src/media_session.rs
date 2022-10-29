@@ -28,11 +28,11 @@ impl MediaSession {
     }
 
     pub fn get_artist(&self) -> String {
-        self.properties.Title().unwrap_or_default().to_string()
+        self.properties.Artist().unwrap_or_default().to_string()
     }
 
     pub fn get_title(&self) -> String {
-        self.properties.Artist().unwrap_or_default().to_string()
+        self.properties.Title().unwrap_or_default().to_string()
     }
 
     pub fn get_position(&self) -> HumanDurationData {
