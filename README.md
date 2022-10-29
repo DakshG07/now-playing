@@ -1,53 +1,26 @@
 # now-playing
-A simple utility that utilizes WinRT to get the Song Title and artist. Also gets current playback features.
+
+A Windows utility written in Rust to be blazingly fast, simple, and easy to use. It gets the currently playing media using WinRT and displays its attributes. It also exposes commands to control the playback.
 
 ## Usage
 
 ```
-now-playing
-```
-Simply run the command to get the current playing song, time, and artist. Only includes the components it can find.
+Gets information about currently playing media on Windows.
 
-```
-now-playing play
-```
-Plays the current music.
+Usage: now-playing.exe [COMMAND]
 
-```
-now-playing pause
-```
-Pauses the music.
+Commands:
+  title     Print the title of the media
+  artist    Print the artist of the media
+  position  Print the current position in the media (may be delayed for a few seconds due to WinRT restrictions)
+  duration  Print the length of the media
+  status    Print the status of the media
+  play      Play the media if it was previously paused
+  pause     Pause the media if it was previously playing
+  toggle    Toggle the state of the media between playing and paused
+  help      Print this message or the help of the given subcommand(s)
 
+Options:
+  -h, --help     Print help information
+  -V, --version  Print version information
 ```
-now-playing toggle
-```
-Pauses/plays the music.
-
-```
-now-playing position
-```
-Gets current timestamp.
-
-```
-now-playing title
-```
-Gets current song.
-
-```
-now-playing artist
-```
-Gets current artist.
-
-```
-now-playing status
-```
-Checks if playback is played or paused. Not yet implemented.
-
-Also has the following flags:
-```
---play [text to return if playing]
---pause [text to return if paused]
-```
-These can be used on play/pause commands to get current status. Will also be used to change the returned value of `toggle`, `play`, and `pause`.
-
-Not yet implemented.
