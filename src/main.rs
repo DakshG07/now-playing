@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2022 DakshG07.
+ *
+ * This file is part of now-playing.
+ *
+ * now-playing is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * now-playing is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 mod cleanup_timespan;
 mod media_session;
 mod media_status;
@@ -5,12 +21,14 @@ mod media_status;
 use crate::media_session::MediaSession;
 use crate::media_status::MediaStatus;
 use clap::{Parser, Subcommand};
-
 #[derive(Debug, Parser)]
-#[command(name = "now-playing")]
-#[command(author = "Dukk <acedaksh07@gmail.com>")]
-#[command(version = "1.0.0")]
-#[command(about = "Gets information about currently playing media on Windows.")]
+#[command(
+    name = clap::crate_name!(),
+    author = clap::crate_authors!(),
+    version = clap::crate_version!(),
+    propagate_version = true,
+    about = clap::crate_description!()
+)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
