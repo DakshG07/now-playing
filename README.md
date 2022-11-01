@@ -5,7 +5,7 @@ A Windows utility written in Rust to be blazingly fast, simple, and easy to use.
 ## Usage
 
 ```
-Gets information about currently playing media on Windows.
+A cli to get information and control media on Windows.
 
 Usage: now-playing.exe [COMMAND]
 

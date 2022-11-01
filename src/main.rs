@@ -5,12 +5,14 @@ mod media_status;
 use crate::media_session::MediaSession;
 use crate::media_status::MediaStatus;
 use clap::{Parser, Subcommand};
-
 #[derive(Debug, Parser)]
-#[command(name = "now-playing")]
-#[command(author = "Dukk <acedaksh07@gmail.com>")]
-#[command(version = "1.0.0")]
-#[command(about = "Gets information about currently playing media on Windows.")]
+#[command(
+    name = clap::crate_name!(),
+    author = clap::crate_authors!(),
+    version = clap::crate_version!(),
+    propagate_version = true,
+    about = clap::crate_description!()
+)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
