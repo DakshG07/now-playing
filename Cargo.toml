@@ -1,14 +1,20 @@
 [package]
 name = "now-playing"
-version = "1.0.0"
+version = "1.1.0"
+authors = ["Dukk <acedaksh07@gmail.com>", "es183923"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
+description = "A cli to get information and control media on Windows."
+repository = "https://github.com/DakshG07/now-playing"
+license = "MIT"
+keywords = ["windows", "media", "music"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 human-repr = "1.0.1"
-clap = { version = "4.0.18", features = ["derive"] }
+
+[dependencies.clap]
+version = "4.0.18"
+features = ["derive", "cargo"]
 
 [dependencies.windows]
 version = "0.43.0"
