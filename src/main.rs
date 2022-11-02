@@ -60,6 +60,8 @@ async fn main() -> Result<(), ()> {
         } else {
             println!("{}", media_session);
         }
+    } else {
+        println!("No media playing");
     }
 
     Ok(())
