@@ -6,7 +6,7 @@ edition = "2021"
 description = "A cli to get information and control media on Windows."
 repository = "https://github.com/DakshG07/now-playing"
 license = "MIT"
-keywords = ["windows", "media", "music"]
+keywords = ["windows", "media", "music", "blazingly", "fast"]
 categories = ["command-line-utilities"]
 
 [dependencies]
